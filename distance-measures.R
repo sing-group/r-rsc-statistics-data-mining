@@ -67,7 +67,8 @@ distances <- dist(binnedPeaksMatrix, method="euclidean")
 #
 #	---------------------------------------------------------------------------
 
-distances <- dist(binnedPeaksMatrix, method="manhattan")
+presenceBinnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix)
+distances <- dist(presenceBinnedPeaksMatrix, method="manhattan")
 
 #	---------------------------------------------------------------------------
 #

@@ -1,5 +1,9 @@
 source("load-cancer.R")
 
+imagesDirectory <- "images/multiple-sample-visualization/"
+
+dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+
 #	---------------------------------------------------------------------------
 #
 #	Intensity Matrix Visualization
@@ -28,7 +32,7 @@ plotIntensityMatrix <- function(peaksMatrix) {
 	)
 }
 
-png("intensity-matrix.png", width = 1200, height = 800)
+png(paste0(imagesDirectory, "intensity-matrix.png"), width = 1200, height = 800)
 plotIntensityMatrix(binnedPeaksMatrix)
 dev.off()
 
@@ -52,7 +56,7 @@ min.mass <- min(as.numeric(colnames(binnedPeaksMatrix)))
 max.mass <- max(as.numeric(colnames(binnedPeaksMatrix)))
 comparison.range <- (max.mass - min.mass) / comparison.parts
 
-png(paste0("spectra-comparison-multi-", comparison.parts, ".png"), width = 1200, height = 800)
+png(paste0(imagesDirectory, "spectra-comparison-multi-", comparison.parts, ".png"), width = 1200, height = 800)
 par(mfrow=c(comparison.parts,1), mar=c(2, 2, 2, 2), oma = c(4, 4, 4, 4))
 
 for(part in 1:comparison.parts) {
@@ -82,15 +86,20 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png("inverse-comparison.png", width = 1200, height = 800)
+compareSpectra <- function(positive, negative) {
+  plot(NULL, xlim=c(min(mass(positive), mass(negative)), max(mass(positive), mass(negative))), ylim=c(-1.1,1.1), xlab="m/z", ylab = "Intensity")
+  for(i in 1:length(positive)) {
+      segments(mass(positive)[i], 0, y1 = intensity(positive)[i])
+  }
+  for(i in 1:length(negative)) {
+      segments(mass(negative)[i], 0, y1 = -intensity(negative)[i])
+  }
+  abline(h=0)
+}
+
 positive <- data$spectra[[1]]
 negative <- data$spectra[[2]]
-plot(NULL, xlim=c(min(mass(positive), mass(negative)), max(mass(positive), mass(negative))), ylim=c(-1.1,1.1), xlab="m/z", ylab = "Intensity")
-for(i in 1:length(positive)) {
-	segments(mass(positive)[i], 0, y1 = intensity(positive)[i])
-}
-for(i in 1:length(negative)) {
-	segments(mass(negative)[i], 0, y1 = -intensity(negative)[i])
-}
-abline(h=0)
+
+png(paste0(imagesDirectory, "inverse-comparison.png"), width = 1200, height = 800)
+compareSpectra(positive, negative)
 dev.off()

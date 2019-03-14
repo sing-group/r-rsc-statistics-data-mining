@@ -1,16 +1,24 @@
 source("distance-measures.R")
 
+imagesDirectory <- "images/clustering/"
+
+dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+
 #	---------------------------------------------------------------------------
 #
 #	1. Hierarchical Clustering
 #
 #	---------------------------------------------------------------------------
+#
+#	1.1.1 Jaccard using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
 
-distances <- jaccard.dist(data$names, toSpectraList(binnedPeaksMatrix))
+distances.jaccard <- jaccard.dist(rownames(binnedPeaksMatrix), toSpectraList(binnedPeaksMatrix))
 
-clustering <- hclust(distances)
+clustering.jaccard <- hclust(distances.jaccard)
 
-clustering.cut <- cutree(clustering, k=3)
+clustering.jaccard.cut <- cutree(clustering.jaccard, k=3)
 
 #	Run the following commands to see the names of the samples that belong to
 #	cluster 1, 2 or 3
@@ -18,45 +26,246 @@ clustering.cut <- cutree(clustering, k=3)
 	#	which(cutree(clustering, k=3)==2)
 	#	which(cutree(clustering, k=3)==3)
 
-png("clustering-jaccard.png", width=1200, height=1200)
-plot(clustering, main = "Samples HCA (complete linkage)")
-rect.hclust(clustering, k = 3, border = c("blue", "red", "green"))
+png(paste0(imagesDirectory, "clustering-jaccard-replicates.png"), width=1200, height=1200)
+plot(clustering.jaccard, main = "Replicates HCA (complete linkage)")
+rect.hclust(clustering.jaccard, k = 3, border = c("blue", "red", "green"))
 dev.off()
 
 #	---------------------------------------------------------------------------
 #
-#	2. Hierarchical Clustering Visualization in Heatmaps
+#	1.1.2 Jaccard using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+distances.jaccard.consensus <- jaccard.dist(rownames(consensusBinnedPeaksMatrix), toSpectraList(consensusBinnedPeaksMatrix))
+
+clustering.jaccard.consensus <- hclust(distances.jaccard.consensus)
+
+png(paste0(imagesDirectory, "clustering-jaccard-samples.png"), width=1200, height=1200)
+plot(clustering.jaccard.consensus, main = "Samples HCA (complete linkage)")
+rect.hclust(clustering.jaccard.consensus, k = 3, border = c("blue", "red", "green"))
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.2.1 Manhattan using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+presenceBinnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix)
+
+distances.manhattan <- dist(presenceBinnedPeaksMatrix, method="manhattan")
+
+clustering.manhattan <- hclust(distances.manhattan)
+
+clustering.manhattan.cut <- cutree(clustering.manhattan, k=3)
+
+png(paste0(imagesDirectory, "clustering-manhattan-replicates.png"), width=1200, height=1200)
+plot(clustering.manhattan, main = "Replicates HCA (complete linkage)")
+rect.hclust(clustering.manhattan, k = 3, border = c("blue", "red", "green"))
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.2.2 Manhattan using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+presenceConsensusBinnedPeaksMatrix <- asPresenceMatrix(consensusBinnedPeaksMatrix)
+
+distances.manhattan.consensus <- dist(presenceConsensusBinnedPeaksMatrix, method="manhattan")
+
+clustering.manhattan.consensus <- hclust(distances.manhattan.consensus)
+
+png(paste0(imagesDirectory, "clustering-manhattan-samples.png"), width=1200, height=1200)
+plot(clustering.manhattan.consensus, main = "Samples HCA (complete linkage)")
+rect.hclust(clustering.manhattan.consensus, k = 3, border = c("blue", "red", "green"))
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.3.1 Euclidean using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+distances.euclidean <- dist(binnedPeaksMatrix, method="euclidean")
+
+clustering.euclidean <- hclust(distances.euclidean)
+
+clustering.euclidean.cut <- cutree(clustering.euclidean, k=3)
+
+png(paste0(imagesDirectory, "clustering-euclidean-replicates.png"), width=1200, height=1200)
+plot(clustering.euclidean, main = "Replicates HCA (complete linkage)")
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.3.2 Euclidean using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+distances.euclidean.consensus <- dist(consensusBinnedPeaksMatrix, method="euclidean")
+
+clustering.euclidean.consensus <- hclust(distances.euclidean.consensus)
+
+png(paste0(imagesDirectory, "clustering-euclidean-samples.png"), width=1200, height=1200)
+plot(clustering.euclidean.consensus, main = "Samples HCA (complete linkage)")
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.4.1 Correlation using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+distances.correlation <- pearson.dist(binnedPeaksMatrix)
+
+clustering.correlation <- hclust(distances.correlation)
+
+clustering.correlation.cut <- cutree(clustering.correlation, k=3)
+
+png(paste0(imagesDirectory, "clustering-correlation-replicates.png"), width=1200, height=1200)
+plot(clustering.correlation, main = "Replicates HCA (complete linkage)")
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	1.4.2 Correlation using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+distances.correlation.consensus <- pearson.dist(consensusBinnedPeaksMatrix)
+
+clustering.correlation.consensus <- hclust(distances.correlation.consensus)
+
+png(paste0(imagesDirectory, "clustering-correlation-samples.png"), width=1200, height=1200)
+plot(clustering.correlation.consensus, main = "Samples HCA (complete linkage)")
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2. Hierarchical Clustering Visualization With Heatmaps
+#
+#	---------------------------------------------------------------------------
+#
+#	2.1 Reusable 'plotHeatmap' Function
 #
 #	---------------------------------------------------------------------------
 
 library("gplots")
 
-breaks <- seq(quantile(binnedPeaksMatrix,na.rm=TRUE,probs=0.001),quantile(binnedPeaksMatrix,probs=0.999,na.rm=TRUE),length.out = 24)
-spectraColors <- data$spectraColors
+plotHeatmap <- function(peaksMatrix, clustering, spectraColors, breaksCount = 24, rowsep = c(), datasetConditions = c(), datasetConditionsColors = c()) {
+	breaks <- seq(
+		quantile(peaksMatrix, na.rm=TRUE, probs=0.001),
+		quantile(peaksMatrix, na.rm=TRUE, probs=0.999),
+		length.out = breaksCount
+	)
 
-png("clustering-jaccard-with-heatmap.png", width=1200, height=1200)
-heatmap.2(
-	binnedPeaksMatrix,
-	Colv=FALSE,
-	Rowv=as.dendrogram(clustering),
-	dendrogram="row",
-	breaks=breaks,
-	col=bluered(length(breaks)-1),
-	scale="none",
-	RowSideColors=spectraColors,
-	na.color = 'gray',
-	#distfun=hamming.dist,
-	#hclustfun=function(d) hclust(d, method="average"),
-	rowsep=c(25, 35),
-	lwid=c(3,6),
-	trace="none",
-	margins =c(12,9),	# widens margins around plot
-)
-par(lend = 1)           # square line ends for the color legend
-legend("topright",      # location of the legend on the heatmap plot
-    legend = c("Healthy", "Lymphoma", "Myeloma"), # category labels
-    col = unique(data$spectraColors),  # color key
-    lty= 1,             # line style
-    lwd = 10            # line width
-)
+	rowSideColors <- spectraColors
+	
+	
+	heatmap.2(
+		peaksMatrix,
+		Colv=FALSE,
+		Rowv=as.dendrogram(clustering),
+		dendrogram="row",
+		breaks=breaks,
+		col=bluered(length(breaks)-1),
+		scale="none",
+		RowSideColors=rowSideColors,
+		na.color = 'gray',
+		rowsep=rowsep,
+		lwid=c(3,6),
+		trace="none",
+		margins =c(12,9),
+	)
+	if(length(datasetConditions)>0 && length(datasetConditionsColors)>0){
+		par(lend = 1)           # square line ends for the color legend
+		legend("topright",      # location of the legend on the heatmap plot
+			legend = datasetConditions, # category labels
+			col = datasetConditionsColors,  # color key
+			lty= 1,             # line style
+			lwd = 10            # line width
+		)
+	}
+}
+
+#	---------------------------------------------------------------------------
+#
+#	2.2.1 Jaccard using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-jaccard-replicates-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(binnedPeaksMatrix, clustering.jaccard, data$spectraColors, rowsep = c(25, 35), datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.2.2 Jaccard using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-jaccard-samples-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(consensusBinnedPeaksMatrix, clustering.jaccard.consensus, consensusData$spectraColors, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.3.1 Manhattan using the replicates matrix (presenceBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-manhattan-replicates-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(presenceBinnedPeaksMatrix, clustering.manhattan, data$spectraColors, breaksCount = 4, rowsep = c(25, 35), datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.3.1 Manhattan using the samples matrix (presenceConsensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-manhattan-samples-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(presenceConsensusBinnedPeaksMatrix, clustering.manhattan.consensus, consensusData$spectraColors, breaksCount = 4, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.4.1 Euclidean using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-euclidean-replicates-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(binnedPeaksMatrix, clustering.euclidean, data$spectraColors, datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.4.2 Euclidean using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-euclidean-samples-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(consensusBinnedPeaksMatrix, clustering.euclidean.consensus, consensusData$spectraColors, rowsep = c(5, 10), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.5.1 Correlation using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-correlation-replicates-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(binnedPeaksMatrix, clustering.correlation, data$spectraColors, datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	2.5.2 Correlation using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+png(paste0(imagesDirectory, "clustering-correlation-samples-with-heatmap.png"), width=1200, height=1200)
+plotHeatmap(consensusBinnedPeaksMatrix, clustering.correlation.consensus, consensusData$spectraColors, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
 dev.off()

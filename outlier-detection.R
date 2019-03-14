@@ -1,9 +1,10 @@
 source("load-cancer.R")
 
-# Each spectra belongs to a sample with 5 technical replicates.
-# The spectra name is prefixed with the corresponding sample name, and here
-# we extract the sample name for each spectra.
-sampleNames <- sapply(data$names, function(sample) substr(sample, 1, 2));
+#	---------------------------------------------------------------------------
+#
+#	1. Outlier detection
+#
+#	---------------------------------------------------------------------------
 
 # The spectra length is the number of peaks that it holds.
 spectraLengths <- sapply(data$spectra, length);
@@ -13,8 +14,8 @@ intensityMeans <- sapply(data$spectra, function(spectra) mean(intensity(spectra)
 
 # Data is grouped in a data frame, so that we can use it in the boxplot function.
 dataFrame <- data.frame(
-  "spectra" = data$names,
-  "samples" = sampleNames,
+  "spectra" = data$spectraNames,
+  "samples" = data$sampleNames,
   # "colors" = c("red", "red", "blue", "blue", "blue", "blue", "blue", "green", "green", "green", "green", "green"),#data$spectraColors,
   "spectraLengths" = spectraLengths,
   "intensityMeans" = intensityMeans,
@@ -43,3 +44,26 @@ bpIntensity = boxplot(
 # Here we extract the spectra with outlier values in the characteristics analyzed.
 dataFrame[dataFrame$spectraLengths %in% bpLength$out,]
 dataFrame[dataFrame$intensityMeans %in% bpIntensity$out,]
+
+#	---------------------------------------------------------------------------
+#
+#	2. Spectra comparison
+#
+#	---------------------------------------------------------------------------
+
+compareSpectra <- function(positive, negative) {
+  plot(NULL, xlim=c(min(mass(positive), mass(negative)), max(mass(positive), mass(negative))), ylim=c(-1.1,1.1), xlab="m/z", ylab = "Intensity")
+  for(i in 1:length(positive)) {
+      segments(mass(positive)[i], 0, y1 = intensity(positive)[i])
+  }
+  for(i in 1:length(negative)) {
+      segments(mass(negative)[i], 0, y1 = -intensity(negative)[i])
+  }
+  abline(h=0)
+}
+
+par(mfrow = c(2,2))
+compareSpectra(data$spectra[[7]], data$spectra[[6]])
+compareSpectra(data$spectra[[7]], data$spectra[[8]])
+compareSpectra(data$spectra[[7]], data$spectra[[9]])
+compareSpectra(data$spectra[[7]], data$spectra[[10]])

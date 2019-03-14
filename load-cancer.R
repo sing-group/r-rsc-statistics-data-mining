@@ -8,6 +8,7 @@ library("MALDIquant")
 loadDirectory <- function(dataDir) {
     spectra <- list.files(dataDir)
     spectraData <- list()
+
     for (spectrumFile in spectra){
    	 spectrumFile <- paste(dataDir,"/", spectrumFile, sep='')
    	 data <- read.csv(spectrumFile)
@@ -21,17 +22,25 @@ loadDirectory <- function(dataDir) {
 loadSamples <- function(dataDir) {
     samples <- list.dirs(dataDir, full.names=FALSE, recursive=FALSE)
     spectra <- list()
-    names <- list()
-    sampleNames <- list()
+    spectraNames <- list()
+    spectraConditions <-  list()
+    spectraSampleNames <- list()
+
     for (sampleDir in samples){
-   	 sampleDirectory <- paste(dataDir,"/", sampleDir, sep='')
-   	 sampleSpectra <- loadDirectory(sampleDirectory)
-   	 spectra <- c(spectra, sampleSpectra)
-   	 names <- c(names, sapply(1:length(sampleSpectra), FUN=function(x) paste(sampleDir,"_R",x,sep='')))
-   	 sampleNames <- c(sampleNames, rep(sampleDir, length(sampleSpectra)))
+		sampleDirectory <- paste(dataDir,"/", sampleDir, sep='')
+		sampleSpectra <- loadDirectory(sampleDirectory)
+		spectra <- c(spectra, sampleSpectra)
+		spectraNames <- c(spectraNames, sapply(1:length(sampleSpectra), FUN=function(x) paste(sampleDir,"_R",x,sep='')))
+		spectraSampleNames <- c(spectraSampleNames, rep(sampleDir, length(sampleSpectra)))
+		spectraConditions <- c(spectraConditions, rep(tail(strsplit(dataDir, "/")[[1]], n=1), length(sampleSpectra)))
     }
     
-    list(names=names, sampleNames=sampleNames, spectra=spectra)
+    list(
+		spectraNames=spectraNames, 
+		spectraSampleNames=spectraSampleNames, 
+		spectraConditions=spectraConditions, 
+		spectra=spectra
+	)
 }
 
 loadDirectories <- function(dataDirs, col) {
@@ -40,22 +49,45 @@ loadDirectories <- function(dataDirs, col) {
     } else {
    	 palette <- col[1:length(dataDirs)]
     }
+    
     spectraColors <- list()
-    names <- list()
-    sampleNames <- list()
+    spectraNames <- list()
+    spectraSampleNames <- list()
+    spectraConditions <- list()
     spectra <- list()
+    
+    datasetConditions <- vector()
+    datasetConditionsColors <- vector()
+    samplesColors <- vector()
 
     i <- 1
     for (dataDir in dataDirs){
-   	 data <- loadSamples(dataDir)
-   	 names <- unlist(c(names, data$names))
-   	 sampleNames <- unlist(c(sampleNames, data$sampleNames))
-   	 spectra <- c(spectra, data$spectra)
-   	 spectraColors <- unlist(c(spectraColors, rep(palette[i], length(data$spectra))))
-   	 i <- i+1
+		datasetCondition <- tail(strsplit(dataDir, "/")[[1]], n=1)
+		datasetConditionsColors <- c(datasetConditionsColors, palette[i])
+		datasetConditions <- c(datasetConditions, datasetCondition)
+		data <- loadSamples(dataDir)
+		spectraNames <- unlist(c(spectraNames, data$spectraNames))
+		spectraSampleNames <- unlist(c(spectraSampleNames, data$spectraSampleNames))
+		spectra <- c(spectra, data$spectra)
+		spectraConditions <- unlist(c(spectraConditions, data$spectraConditions))
+		spectraColors <- unlist(c(spectraColors, rep(palette[i], length(data$spectra))))
+		samplesColors <- c(samplesColors, rep(palette[i], length(unique(data$spectraSampleNames))))
+		i <- i+1
     }
     
-    list(names=names, sampleNames=sampleNames, spectra=spectra, spectraColors=spectraColors)
+    sampleNames <- unique(spectraSampleNames)
+    
+    list(
+		spectraNames = spectraNames, 
+		spectraSampleNames = spectraSampleNames, 
+		spectraConditions = spectraConditions, 
+		spectra = spectra, 
+		spectraColors = spectraColors, 
+		sampleNames = sampleNames, 
+		samplesColors = samplesColors, 
+		datasetConditions = datasetConditions, 
+		datasetConditionsColors = datasetConditionsColors
+	)
 }
 
 getBinnedPeaksMatrix <- function(data, tolerance=0.002, peakIntensityThreshold=0) {
@@ -63,20 +95,19 @@ getBinnedPeaksMatrix <- function(data, tolerance=0.002, peakIntensityThreshold=0
     binnedPeaksMatrix <- intensityMatrix(binnedPeaks)
     binnedPeaksMatrix[is.na(binnedPeaksMatrix)] <- 0
     binnedPeaksMatrix <- binnedPeaksMatrix[,apply(binnedPeaksMatrix, 2, max) >= peakIntensityThreshold]
-    rownames(binnedPeaksMatrix) <- data$names
+    rownames(binnedPeaksMatrix) <- data$spectraNames
 
     binnedPeaksMatrix
 }
 
 toConsensusSpectraData <- function(data, tolerance=0.002, POP=0.5) {
 	consensusSpectra <- list()
-	consensusColors <- vector()
-	sampleNames <- unique(data$sampleNames)
+	sampleNames <- data$sampleNames
 	firstReplicateIndex <- 1
 
 	for(i in 1:length(sampleNames)) {
 		currentSample <- sampleNames[i]
-		currentSampleIndexes <- which(data$sampleNames == currentSample)
+		currentSampleIndexes <- which(data$spectraSampleNames == currentSample)
 		numSamples <- length(currentSampleIndexes)
 		sampleSpectra <- data$spectra[currentSampleIndexes]
 
@@ -102,11 +133,15 @@ toConsensusSpectraData <- function(data, tolerance=0.002, POP=0.5) {
 		)
 
 		consensusSpectra <- c(consensusSpectra, currentConsensusSpectrum)
-		consensusColors <- c(consensusColors, data$spectraColors[firstReplicateIndex])
-		firstReplicateIndex <- firstReplicateIndex + numSamples
 	}
 
-	list(names=sampleNames, spectra=consensusSpectra, spectraColors=consensusColors)
+	list(
+		spectraNames=sampleNames, 
+		spectra=consensusSpectra, 
+		spectraColors=data$samplesColors, 
+		datasetConditions=data$datasetConditions, 
+		datasetConditionsColors=data$datasetConditionsColors
+	)
 }
 
 asPresenceMatrix <- function(data) {
