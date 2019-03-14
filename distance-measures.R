@@ -119,7 +119,7 @@ jaccard.dist <- function(dataNames, spectraData) {
     as.dist(result)
 }
 
-distances <- jaccard.dist(data$names, toSpectraList(binnedPeaksMatrix))
+distances <- jaccard.dist(rownames(binnedPeaksMatrix), toSpectraList(binnedPeaksMatrix))
 
 #	---------------------------------------------------------------------------
 #
