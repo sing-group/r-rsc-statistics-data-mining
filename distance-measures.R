@@ -46,8 +46,9 @@ jaccard(masses_1, masses_2)
 #
 #	---------------------------------------------------------------------------
 
-binnedPeaksMatrixDataFrame <- as.data.frame(t(binnedPeaksMatrix))
-cor(binnedPeaksMatrixDataFrame$HA_R1, binnedPeaksMatrixDataFrame$HA_R2, method="pearson")
+spectrum_1 <- binnedPeaksMatrix[1,]
+spectrum_2 <- binnedPeaksMatrix[2,]
+1-cor(spectrum_1, spectrum_2, method="pearson")
 
 #	---------------------------------------------------------------------------
 #
@@ -76,7 +77,11 @@ distances <- dist(presenceBinnedPeaksMatrix, method="manhattan")
 #
 #	---------------------------------------------------------------------------
 
-library("hyperSpec")
+pearson.dist <- function(binnedPeaksMatrix) {
+    result <- 1 - cor(t(binnedPeaksMatrix), t(binnedPeaksMatrix), method="pearson")
+
+    as.dist(result)
+}
 
 distances <- pearson.dist(binnedPeaksMatrix)
 
