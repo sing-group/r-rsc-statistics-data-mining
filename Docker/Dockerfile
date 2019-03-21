@@ -8,6 +8,4 @@ ENV DEBIAN_FRONTEND noninteractive
 	
 RUN apt-get update && apt-get install -y r-base
 
-RUN R -e 'install.packages(c("MALDIquant", "MALDIquantForeign", "devtools"), dependencies=TRUE,repos = "http://cloud.r-project.org"); library(devtools); install_github("sgibb/MALDIquantExamples")'
-
-RUN R -e 'install.packages("gplots", dependencies=TRUE)'
+RUN R -e 'install.packages(c("MALDIquant", "MALDIquantForeign", "devtools", "pvclust", "gplots"), dependencies=TRUE,repos = "http://cloud.r-project.org"); library(devtools); install_github("sgibb/MALDIquantExamples")'

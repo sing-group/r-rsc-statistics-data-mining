@@ -269,3 +269,128 @@ dev.off()
 png(paste0(imagesDirectory, "clustering-correlation-samples-with-heatmap.png"), width=1200, height=1200)
 plotHeatmap(consensusBinnedPeaksMatrix, clustering.correlation.consensus, consensusData$spectraColors, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
 dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.  Assessing the uncertainty in hierarchical clustering with pvclust
+#
+#		Homepage: http://stat.sys.i.kyoto-u.ac.jp/prog/pvclust/
+#		CRAN: https://cran.r-project.org/web/packages/pvclust/index.html
+#		Paper: https://doi.org/10.1093/bioinformatics/btl117
+#
+#	---------------------------------------------------------------------------
+
+library("pvclust")
+
+# Set a seed so that the pvclust always gives the same results
+set.seed(2019)
+
+#	---------------------------------------------------------------------------
+#
+#	3.1.1 Jaccard using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+jaccard.dist.2 <- function(binnedPeaksMatrix) {
+	jaccard.dist(rownames(t(binnedPeaksMatrix)), toSpectraList(t(binnedPeaksMatrix)))
+}
+
+res.pv.jaccard <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = jaccard.dist.2, nboot = 1000, parallel=F)
+
+png(paste0(imagesDirectory, "clustering-jaccard-replicates-pvclust.png"), width=1200, height=1200)
+plot(res.pv.jaccard, hang = -1, cex = 0.5)
+pvrect(res.pv.jaccard)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.1.2 Jaccard using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.jaccard.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = jaccard.dist.2, nboot = 1000, parallel=F)
+
+png(paste0(imagesDirectory, "clustering-jaccard-samples-pvclust.png"), width=1200, height=1200)
+plot(res.pv.jaccard.consensus, hang = -1, cex = 0.5)
+pvrect(res.pv.jaccard.consensus)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.2.1 Manhattan using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.manhattan <- pvclust(t(presenceBinnedPeaksMatrix), method.hclust = "complete", method.dist = "manhattan", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-manhattan-replicates-pvclust.png"), width=1200, height=1200)
+plot(res.pv.manhattan, hang = -1, cex = 0.5)
+pvrect(res.pv.manhattan)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.2.2 Manhattan using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.manhattan.consensus <- pvclust(t(presenceConsensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "manhattan", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-manhattan-samples-pvclust.png"), width=1200, height=1200)
+plot(res.pv.manhattan.consensus, hang = -1, cex = 0.5)
+pvrect(res.pv.manhattan.consensus)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.3.1 Euclidean using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.euclidean <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = "euclidean", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-euclidean-replicates-pvclust.png"), width=1200, height=1200)
+plot(res.pv.euclidean, hang = -1, cex = 0.5)
+pvrect(res.pv.euclidean)
+dev.off()
+
+
+#	---------------------------------------------------------------------------
+#
+#	3.3.2 Euclidean using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.euclidean.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "euclidean", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-euclidean-samples-pvclust.png"), width=1200, height=1200)
+plot(res.pv.euclidean.consensus, hang = -1, cex = 0.5)
+pvrect(res.pv.euclidean.consensus)
+dev.off()
+
+
+#	---------------------------------------------------------------------------
+#
+#	3.4.1 Correlation using the replicates matrix (binnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.correlation <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = "correlation", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-correlation-replicates-pvclust.png"), width=1200, height=1200)
+plot(res.pv.correlation, hang = -1, cex = 0.5)
+pvrect(res.pv.correlation)
+dev.off()
+
+#	---------------------------------------------------------------------------
+#
+#	3.4.2 Correlation using the samples matrix (consensusBinnedPeaksMatrix)
+#
+#	---------------------------------------------------------------------------
+
+res.pv.correlation.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "correlation", nboot = 1000, parallel=T)
+
+png(paste0(imagesDirectory, "clustering-correlation-samples-pvclust.png"), width=1200, height=1200)
+plot(res.pv.correlation.consensus, hang = -1, cex = 0.5)
+pvrect(res.pv.correlation.consensus)
+dev.off()
