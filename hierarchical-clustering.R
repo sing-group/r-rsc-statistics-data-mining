@@ -1,6 +1,6 @@
 source("distance-measures.R")
 
-imagesDirectory <- "images/clustering/"
+imagesDirectory <- "images/clustering/hierarchical/"
 
 dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
 
