@@ -59,6 +59,7 @@ loadDirectories <- function(dataDirs, col) {
     datasetConditions <- vector()
     datasetConditionsColors <- vector()
     samplesColors <- vector()
+    samplesConditions <- vector()
 
     i <- 1
     for (dataDir in dataDirs){
@@ -72,6 +73,8 @@ loadDirectories <- function(dataDirs, col) {
 		spectraConditions <- unlist(c(spectraConditions, data$spectraConditions))
 		spectraColors <- unlist(c(spectraColors, rep(palette[i], length(data$spectra))))
 		samplesColors <- c(samplesColors, rep(palette[i], length(unique(data$spectraSampleNames))))
+		samplesConditions <- c(samplesConditions, rep(data$spectraConditions[[1]], length(unique(data$spectraSampleNames))))
+
 		i <- i+1
     }
     
@@ -84,7 +87,8 @@ loadDirectories <- function(dataDirs, col) {
 		spectra = spectra, 
 		spectraColors = spectraColors, 
 		sampleNames = sampleNames, 
-		samplesColors = samplesColors, 
+		samplesColors = samplesColors,
+		samplesConditions = samplesConditions,
 		datasetConditions = datasetConditions, 
 		datasetConditionsColors = datasetConditionsColors
 	)
@@ -138,7 +142,8 @@ toConsensusSpectraData <- function(data, tolerance=0.002, POP=0.5) {
 	list(
 		spectraNames=sampleNames, 
 		spectra=consensusSpectra, 
-		spectraColors=data$samplesColors, 
+		spectraColors=data$samplesColors,
+		spectraConditions = data$samplesConditions, 
 		datasetConditions=data$datasetConditions, 
 		datasetConditionsColors=data$datasetConditionsColors
 	)
