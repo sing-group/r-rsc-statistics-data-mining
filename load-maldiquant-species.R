@@ -35,7 +35,8 @@ spots <- sapply(avgSpectra, function(x)metaData(x)$spot)
 species <- sapply(avgSpectra, function(x)metaData(x)$sampleName)
 species <- factor(species) 
 
-binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered, avgSpectra)
+#binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered, avgSpectra)
+binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered)
 rownames(binnedPeaksMatrix) <- paste(species, spots, sep=".")
 
 binnedPeaksMatrix.conditions <- species

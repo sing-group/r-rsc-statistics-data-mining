@@ -29,7 +29,8 @@ peaks.binned <- binPeaks(peaks)
 
 peaks.binned.filtered <- filterPeaks(peaks.binned, minFrequency=c(0.5, 0.5), labels=avgSpectra.info$health, mergeWhitelists=TRUE)
 
-binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered, avgSpectra)
+# binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered, avgSpectra)
+binnedPeaksMatrix <- intensityMatrix(peaks.binned.filtered)
 rownames(binnedPeaksMatrix) <- avgSpectra.info$patientID
 
 binnedPeaksMatrix.conditions <- avgSpectra.info$health
