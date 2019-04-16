@@ -138,12 +138,12 @@ caret::confusionMatrix(data = nn.test.result, test.fixedColnames$condition)
 #
 #	---------------------------------------------------------------------------
 
-svm.model <- train(condition~., data = train, method = "svmLinear2", trControl = trainControl(method = "none"))
+svm.model <- train(condition~., data = train.fixedColnames, method = "svmLinear2", trControl = trainControl(method = "none"))
 
 # Train data predictions
 svm.pred.train <- predict(svm.model)
-caret::confusionMatrix(data = svm.pred.train, train$condition)
+caret::confusionMatrix(data = svm.pred.train, train.fixedColnames$condition)
 
 # Test data predictions
-svm.pred.test <- predict(svm.model, newdata=test)
-caret::confusionMatrix(data = svm.pred.test, test$condition)
+svm.pred.test <- predict(svm.model, newdata=test.fixedColnames)
+caret::confusionMatrix(data = svm.pred.test, test.fixedColnames$condition)
