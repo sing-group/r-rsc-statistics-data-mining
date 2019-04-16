@@ -1,3 +1,5 @@
+library("caret")
+
 imagesDirectory <- "images/machine-learning/"
 
 dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
@@ -11,16 +13,27 @@ dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
 source("load-maldiquant-cancer-fiedler.R")
 
 data <- as.data.frame(binnedPeaksMatrix)
+data[is.na(data)] <- 0
 data <- cbind(data, binnedPeaksMatrix.conditions)
 colnames(data)[ncol(data)] <- "condition"
 
 set.seed(2019)
 
-trainSamples <- round(0.7*nrow(data))
-trainSamplesIndexes <- sample(1:nrow(data), trainSamples)
+trainSamplesIndexes <- createDataPartition(y = data$condition, p = 0.7, list = FALSE)
 
 train <- data[trainSamplesIndexes,]
 test <- data[-trainSamplesIndexes,]
+
+# Replace column names with V1, V2, ..., Vn to use them in some models that do
+# not accept variable names starting with numbers
+
+data.colnames <- c(sapply(1:(ncol(data)-1), function(x) paste0("V", x)), "condition")
+
+train.fixedColnames <- train
+colnames(train.fixedColnames) <- data.colnames
+
+test.fixedColnames <- test
+colnames(test.fixedColnames) <- data.colnames
 
 #	---------------------------------------------------------------------------
 #
@@ -28,33 +41,15 @@ test <- data[-trainSamplesIndexes,]
 #
 #	---------------------------------------------------------------------------
 
-train.lr <- train
-train.lr$condition <- ifelse(train.lr$condition == "cancer", 1, 0)
+lr <- train(condition ~ ., data = train.fixedColnames, method = "glm", trControl = trainControl(method = "none"))
 
-test.lr <- test
-test.lr$condition <- ifelse(test.lr$condition == "cancer", 1, 0)
+# Train data predictions
+lr.train.result <- predict(lr, type="raw")
+caret::confusionMatrix(data = lr.train.result, train.fixedColnames$condition)
 
-lr <- glm(condition~., family=binomial(link='logit'), data=train.lr)
-
-lr
-
-pred.prob.train <- predict(lr, type='response')
-
-#
-# Alternative ways of obtaining the predicted probabilities:
-#
-# pred.odds <- predict(lr); pred.prob.train <- 1/(1+exp(-pred.odds))
-#
-# pred.odds <- predict(lr); pred.prob.train <- plogis(pred.odds)
-#
-
-lr.train.result <- ifelse(pred.prob.train > 0.5, 1, 0)
-table(lr.train.result, train.lr$condition)
-
-pred.prob.test <- predict(lr, newdata=test.lr, type='response')
-
-lr.test.result <- ifelse(pred.prob.test > 0.5, 1, 0)
-table(lr.test.result, test.lr$condition)
+# Test data predictions
+lr.test.result <- predict(lr, type="raw", newdata=test.fixedColnames)
+caret::confusionMatrix(data = lr.test.result, test.fixedColnames$condition)
 
 #	---------------------------------------------------------------------------
 #
@@ -62,28 +57,34 @@ table(lr.test.result, test.lr$condition)
 #
 #	---------------------------------------------------------------------------
 
-library("rpart")
 library("rpart.plot")
 
-tree <- rpart(condition~., method = 'class', data=train)
-tree
+tree <- train(condition ~ ., data = train.fixedColnames, method = "rpart1SE", trControl = trainControl(method = "none"))
+
+# Look at the caret available models for other rpart methods: 
+#   https://rdrr.io/cran/caret/man/models.html
+#
+# For instance, the following method also fits a tree by controlling them
+# complexity parameter (cp):
+#   tree <- train(condition ~ ., data = train.fixedColnames, method = "rpart", 
+# trControl = trainControl(method = "none"), tuneGrid = expand.grid(cp=0.003))
 
 # Train data predictions
-tree.pred.train <- predict(tree, type = 'class')
-table(tree.pred.train, train$condition)
+lr.train.result <- predict(tree, type="raw")
+caret::confusionMatrix(data = lr.train.result, train.fixedColnames$condition)
 
 # Test data predictions
-tree.pred.test <- predict(tree, newdata=test, type = 'class')
-table(tree.pred.test, test$condition)
+lr.test.result <- predict(tree, type="raw", newdata=test.fixedColnames)
+caret::confusionMatrix(data = lr.test.result, test.fixedColnames$condition)
 
 # Simple plot: https://stat.ethz.ch/R-manual/R-devel/library/rpart/html/plot.rpart.html
 png(paste0(imagesDirectory, "decision-tree-1.png"), width=1200, height=1200)
-plot(tree, uniform=TRUE, margin=.05)
-text(tree, use.n = TRUE)
+plot(tree$finalModel, uniform=TRUE, margin=.05)
+text(tree$finalModel, use.n = TRUE)
 dev.off()
 
 png(paste0(imagesDirectory, "decision-tree-2.png"), width=1200, height=1200)
-rpart.plot(tree, box.palette="RdBu", shadow.col="gray", nn=TRUE)
+rpart.plot(tree$finalModel, box.palette="RdBu", shadow.col="gray", nn=TRUE)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -92,32 +93,28 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-library("randomForest")
+randomforest <- train(condition~., data = train.fixedColnames, method = "rf", trControl = trainControl(method = "none"))
 
-train.rf <- train
-test.rf <- test
-
-nn.colnames <- c(sapply(1:(ncol(data)-1), function(x) paste0("v", x)), "condition")
-
-colnames(train.rf) <- nn.colnames
-colnames(test.rf) <- nn.colnames
-
-randomforest <- randomForest(condition~., data=train.rf)
-randomforest
+# Example of how to fit a random forest specifying the number randomly selected 
+# predictors at each split:
+#   randomforest <- train(condition~., data = train.fixedColnames, method = "rf", 
+# trControl = trainControl(method = "none"), tuneGrid = expand.grid(mtry=40))
 
 # Train data predictions
-randomforest.pred.train <- predict(randomforest)
-table(randomforest.pred.train, train.rf$condition)
+lr.train.result <- predict(randomforest, type="raw")
+caret::confusionMatrix(data = lr.train.result, train.fixedColnames$condition)
 
 # Test data predictions
-randomforest.pred.test <- predict(randomforest, newdata=test.rf)
-table(randomforest.pred.test, test.rf$condition)
+lr.test.result <- predict(randomforest, type="raw", newdata=test.fixedColnames)
+caret::confusionMatrix(data = lr.test.result, test.fixedColnames$condition)
 
 # Variable importance
-randomforest$importance
-rownames(randomforest$importance) <- colnames(train)[-ncol(train)]
+library("randomForest")
 
-varImpPlot(randomforest, type=2)
+randomforest$finalModel$importance
+rownames(randomforest$finalModel$importance) <- colnames(train)[-ncol(train)]
+
+varImpPlot(randomforest$finalModel, type=2)
 dev.print(png, paste0(imagesDirectory, "random-forest-variable-importance.png"), width=600, height=600)
 
 #	---------------------------------------------------------------------------
@@ -126,44 +123,14 @@ dev.print(png, paste0(imagesDirectory, "random-forest-variable-importance.png"),
 #
 #	---------------------------------------------------------------------------
 
-library("neuralnet")
+nn <- train(condition~., data = train.fixedColnames, method = "mlp", trControl = trainControl(method = "none"), preProcess = c("center", "scale"))
 
-train.nn <- train
-train.nn$condition <- ifelse(train.nn$condition == "cancer", 1, 0)
-
-test.nn <- test
-test.nn$condition <- ifelse(test.nn$condition == "cancer", 1, 0)
-
-# The neuralnet package does not accept column names starting with numbers, so it
-# is necessary to rename them to v1, v2, ... vN.
-
-nn.colnames <- c(sapply(1:(ncol(data)-1), function(x) paste0("v", x)), "condition")
-
-colnames(train.nn) <- nn.colnames
-colnames(test.nn) <- nn.colnames
-
-# The neuralnet package does not accept formulas like condition~., so it is 
-# necessary to write all the variables.
-
-n <- names(train.nn)
-f <- as.formula(paste("condition ~", paste(n[!n %in% "condition"], collapse = " + ")))
-
-nn <- neuralnet(f, data=train.nn, hidden=3)
-
-plot(nn)
-dev.print(png, paste0(imagesDirectory, "neural-network.png"), width=1200, height=1200)
-
-# Train data predictions
-nn.pred.train <- compute(nn, train.nn)
-nn.pred.train.prob <- nn.pred.train$net.result
-result.train <- ifelse(nn.pred.train.prob > 0.5, 1, 0)
-table(result.train, train.nn$condition)
+nn.train.result <- predict(nn, type="raw")
+caret::confusionMatrix(data = nn.train.result, train.fixedColnames$condition)
 
 # Test data predictions
-nn.pred.test <- compute(nn, test.nn)
-nn.pred.test.prob <- nn.pred.test$net.result
-result.test <- ifelse(nn.pred.test.prob > 0.5, 1, 0)
-table(result.test, test.nn$condition)
+nn.test.result <- predict(nn, type="raw", newdata=test.fixedColnames)
+caret::confusionMatrix(data = nn.test.result, test.fixedColnames$condition)
 
 #	---------------------------------------------------------------------------
 #
@@ -171,15 +138,12 @@ table(result.test, test.nn$condition)
 #
 #	---------------------------------------------------------------------------
 
-library("e1071")
-
-svm.model <- svm(condition ~ ., kernel = "linear", data = train) 
-svm.model
+svm.model <- train(condition~., data = train, method = "svmLinear2", trControl = trainControl(method = "none"))
 
 # Train data predictions
 svm.pred.train <- predict(svm.model)
-table(svm.pred.train, train$condition)
+caret::confusionMatrix(data = svm.pred.train, train$condition)
 
 # Test data predictions
 svm.pred.test <- predict(svm.model, newdata=test)
-table(svm.pred.test, test$condition)
+caret::confusionMatrix(data = svm.pred.test, test$condition)
