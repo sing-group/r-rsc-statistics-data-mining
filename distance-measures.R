@@ -1,5 +1,9 @@
 source("load-cancer.R")
 
+imagesDirectory <- "images/distance-measures/"
+
+dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+
 #	---------------------------------------------------------------------------
 #
 #	1. Pairwise Comparisons: calculating the distances between two spectra
@@ -56,24 +60,56 @@ spectrum_2 <- binnedPeaksMatrix[2,]
 #
 #	---------------------------------------------------------------------------
 #
-#	2.1 Euclidean Distance
+#	2.1 Definition of a function using ggplot2 to visualize the distances
+#       matrices.
+#
+#	---------------------------------------------------------------------------
+
+library("ggplot2")
+    
+plotDistances <- function(distances, binnedPeaksMatrix) {
+
+    distanceMatrix <- as.matrix(distances)
+    sampleNames <- rownames(binnedPeaksMatrix)
+    dataPlot <- data.frame(row.names=seq(length(sampleNames)*length(sampleNames)))
+    dataPlot$sampleA <- rep(sampleNames, each=length(sampleNames))
+    dataPlot$sampleB <- rep(sampleNames, length(sampleNames))
+    dataPlot$value <- as.vector(t(distanceMatrix))
+
+
+    ggplot(data=dataPlot,
+        aes(x=sampleA, y=sampleB, fill=value)) + geom_tile() +
+        theme_bw() + xlab("sample") + ylab("sample") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+}
+
+#	---------------------------------------------------------------------------
+#
+#	2.2 Euclidean Distance
 #
 #	---------------------------------------------------------------------------
 
 distances <- dist(binnedPeaksMatrix, method="euclidean")
 
+png(paste0(imagesDirectory, "euclidean.png"), width=1200, height=1200)
+plotDistances(distances, binnedPeaksMatrix)
+dev.off()
+
 #	---------------------------------------------------------------------------
 #
-#	2.2 Manhattan Distance
+#	2.3 Manhattan Distance
 #
 #	---------------------------------------------------------------------------
 
 presenceBinnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix)
 distances <- dist(presenceBinnedPeaksMatrix, method="manhattan")
 
+png(paste0(imagesDirectory, "manhattan.png"), width=1200, height=1200)
+plotDistances(distances, presenceBinnedPeaksMatrix)
+dev.off()
+
 #	---------------------------------------------------------------------------
 #
-#	2.3 Pearson Correlation Distance
+#	2.4 Pearson Correlation Distance
 #
 #	---------------------------------------------------------------------------
 
@@ -85,9 +121,13 @@ pearson.dist <- function(binnedPeaksMatrix) {
 
 distances <- pearson.dist(binnedPeaksMatrix)
 
+png(paste0(imagesDirectory, "pearson.png"), width=1200, height=1200)
+plotDistances(distances, binnedPeaksMatrix)
+dev.off()
+
 #	---------------------------------------------------------------------------
 #
-#	2.4 Jaccard Distance
+#	2.5 Jaccard Distance
 #
 #	---------------------------------------------------------------------------
 
@@ -127,24 +167,6 @@ jaccard.dist <- function(dataNames, spectraData) {
 
 distances <- jaccard.dist(rownames(binnedPeaksMatrix), toSpectraList(binnedPeaksMatrix))
 
-#	---------------------------------------------------------------------------
-#
-#	3. Visualization of Distance Matrices
-#
-#	---------------------------------------------------------------------------
-
-library("ggplot2")
-
-distanceMatrix <- as.matrix(distances)
-sampleNames <- rownames(binnedPeaksMatrix)
-dataPlot <- data.frame(row.names=seq(length(sampleNames)*length(sampleNames)))
-dataPlot$sampleA <- rep(sampleNames, each=length(sampleNames))
-dataPlot$sampleB <- rep(sampleNames, length(sampleNames))
-dataPlot$value <- as.vector(t(distanceMatrix))
-
-png("distance-matrix.png", width = 1200, height = 800)
-ggplot(data=dataPlot,
-       aes(x=sampleA, y=sampleB, fill=value)) + geom_tile() +
-       theme_bw() + xlab("sample") + ylab("sample") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
+png(paste0(imagesDirectory, "jaccard.png"), width=1200, height=1200)
+plotDistances(distances, binnedPeaksMatrix)
 dev.off()
