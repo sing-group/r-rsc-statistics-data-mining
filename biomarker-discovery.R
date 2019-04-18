@@ -2,6 +2,8 @@ source("data-functions.R")
 
 imagesDirectory <- "images/biomarker/"
 
+dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+
 #	---------------------------------------------------------------------------
 #
 #	1. Biomarker discovery
@@ -58,7 +60,7 @@ pvals <- p.adjust(pvals, method="fdr")
 # Show the boxplot for a peak with p-val < 0.01
 png(paste0(imagesDirectory, "biomarker-species-intensities.png"), width = 1200, height = 800)
 
-boxplot(binnedPeaksMatrix[,"1974.3176290975"] ~ binnedPeaksMatrix.conditions, ylab="intensity", xlab="specie", main="Peak 1974.3176290975 by specie")
+boxplot(binnedPeaksMatrix[,"1974.3176290975"] ~ binnedPeaksMatrix.conditions, ylab="intensity", xlab="species", main="Peak 1974.3176290975 by species")
 
 dev.off()
 
