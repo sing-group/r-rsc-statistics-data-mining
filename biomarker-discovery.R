@@ -75,6 +75,7 @@ dev.off()
 #	---------------------------------------------------------------------------
 
 source("load-maldiquant-cancer-fiedler.R")
+source("data-functions.R")
 
 binnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix, "present", "absent")
 
@@ -100,6 +101,7 @@ table(factor(binnedPeaksMatrix[,"2093.05826713668"], c("present","absent")), bin
 #	---------------------------------------------------------------------------
 
 source("load-maldiquant-species.R")
+source("data-functions.R")
 
 binnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix, "present", "absent")
 
@@ -129,6 +131,7 @@ table(factor(binnedPeaksMatrix[,"2008.24525043867"], c("present","absent")), bin
 #	---------------------------------------------------------------------------
 
 source("load-maldiquant-cancer-fiedler.R")
+source("data-functions.R")
 
 binnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix)
 pvals <- c()
@@ -147,7 +150,7 @@ mapConditionToColor <- function(conditions) {
 png(paste0(imagesDirectory, "biomarker-cancer-top20-heatmap.png"), width = 1200, height = 800)
 
 topPeaksMatrixWithPvals <- t(binnedPeaksMatrix[,names(pvals[pvals<0.05])])
-rownames(topPeaksMatrixWithPvals) <- paste(rownames(topPeaksMatrixWithPvals)," (pval: ", pvals[pvals<0.05], ")")
+rownames(topPeaksMatrixWithPvals) <- paste(rownames(topPeaksMatrixWithPvals)," (pval: ", as.character(format(pvals[pvals<0.05])), ")")
 
 heatmap(
     topPeaksMatrixWithPvals, 
