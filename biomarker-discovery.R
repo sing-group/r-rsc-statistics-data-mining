@@ -138,9 +138,8 @@ for (i in 1:ncol(binnedPeaksMatrix)) {
 }
 pvals <- p.adjust(pvals, method="fdr")
 
-mapConditionToColor<-function(conditions){
-    colorsVector = ifelse(conditions=="cancer", 
-        "#D95DA5", "#82D3A5")
+mapConditionToColor <- function(conditions) {
+    colorsVector = ifelse(conditions=="cancer", "#D95DA5", "#82D3A5")
     return(colorsVector)
 }
 
@@ -148,11 +147,34 @@ mapConditionToColor<-function(conditions){
 png(paste0(imagesDirectory, "biomarker-cancer-top20-heatmap.png"), width = 1200, height = 800)
 
 topPeaksMatrixWithPvals <- t(binnedPeaksMatrix[,names(pvals[pvals<0.05])])
-rownames(topPeaksMatrixWithPvals)<-paste(rownames(topPeaksMatrixWithPvals)," (pval: ", pvals[pvals<0.05], ")")
+rownames(topPeaksMatrixWithPvals) <- paste(rownames(topPeaksMatrixWithPvals)," (pval: ", pvals[pvals<0.05], ")")
 
-heatmap(topPeaksMatrixWithPvals, scale="none", ColSideColors=mapConditionToColor(binnedPeaksMatrix.conditions), col=rev(terrain.colors(2)))
-legend("left", inset=.02, title="Peak presence", c("present","absent"), fill=terrain.colors(2), horiz=TRUE, cex=0.8)
-legend("bottomleft", inset=.02, title="Group", c("cancer","control"), fill=c("#D95DA5", "#82D3A5"), horiz=TRUE, cex=0.8)
+heatmap(
+    topPeaksMatrixWithPvals, 
+    scale="none", 
+    ColSideColors=mapConditionToColor(binnedPeaksMatrix.conditions), 
+    col=rev(terrain.colors(2))
+)
+
+legend(
+    "left", 
+    inset=.02, 
+    title="Peak presence", 
+    c("present","absent"), 
+    fill=terrain.colors(2), 
+    horiz=TRUE, 
+    cex=0.8
+)
+
+legend(
+    "bottomleft", 
+    inset=.02, 
+    title="Group", 
+    c("cancer","control"), 
+    fill=c("#D95DA5", "#82D3A5"), 
+    horiz=TRUE, 
+    cex=0.8
+)
 
 dev.off()
 
