@@ -16,7 +16,6 @@ intensityMeans <- sapply(data$spectra, function(spectra) mean(intensity(spectra)
 dataFrame <- data.frame(
   "spectra" = data$spectraNames,
   "samples" = data$sampleNames,
-  # "colors" = c("red", "red", "blue", "blue", "blue", "blue", "blue", "green", "green", "green", "green", "green"),#data$spectraColors,
   "spectraLengths" = spectraLengths,
   "intensityMeans" = intensityMeans,
   stringsAsFactors = FALSE
@@ -28,16 +27,16 @@ par(mfrow = c(1,2))
 # Generation of the boxplot for the spectra lengths.
 bpLength = boxplot(
   spectraLengths ~ samples, data = dataFrame,
-  main = "Spectra Size", ylab = "Number of peaks", xlab = "Sample"
-  # col = dataFrame$colors
+  main = "Spectra Size", ylab = "Number of peaks", xlab = "Sample",
+  col = data$samplesColors
 )
 
 
 # Generation of the boxplot for the mean peak intensity.
 bpIntensity = boxplot(
   intensityMeans ~ samples, data = dataFrame,
-  main = "Intensities", ylab = "Mean Intensity", xlab = "Sample"
-  # , col = dataFrame$colors
+  main = "Intensities", ylab = "Mean Intensity", xlab = "Sample",
+  col = data$samplesColors
 )
 
 # The boxplot result includes the "out" attribute, a vector with the outlier values.
