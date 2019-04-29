@@ -2,7 +2,9 @@ library("pROC")
 
 imagesDirectory <- "images/roc/"
 
-dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+dir.create(imagesDirectory,
+           recursive = TRUE,
+           showWarnings = FALSE)
 
 source("load-maldiquant-cancer-fiedler.R")
 
@@ -18,22 +20,42 @@ binnedPeaksMatrix[is.na(binnedPeaksMatrix)] <- 0
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "roc-biomarker.png"), width = 800, height = 800)
+png(paste0(imagesDirectory, "roc-biomarker.png"),
+    width = 800,
+    height = 800)
 # plot the biomarker
 
-rocobj <- plot.roc(binnedPeaksMatrix.conditions, binnedPeaksMatrix[,"1450.33683095267"])
+rocobj <-
+  plot.roc(binnedPeaksMatrix.conditions, binnedPeaksMatrix[, "1450.33683095267"])
 dev.off()
 
 # show area under roc curve
 rocobj$auc
 # show best threshold
-coords(rocobj, "best", ret=c("threshold", "sensitivity", "specificity"))
+coords(rocobj,
+       "best",
+       ret = c("threshold", "sensitivity", "specificity"))
 
 # compare 2 biomarkers
-png(paste0(imagesDirectory, "roc-2biomarkers.png"), width = 800, height = 800)
-rocobj <- plot.roc(binnedPeaksMatrix.conditions, binnedPeaksMatrix[,"1450.33683095267"], col="red")
-legend("bottomright", col=c("#ff0000", "#0000ff"), legend=c("peak 1450.33683095267","peak 1546.52890935556"), lwd=2)
-rocobj2 <- plot.roc(binnedPeaksMatrix.conditions, binnedPeaksMatrix[,"1546.52890935556"], col="blue", add=TRUE)
+png(
+  paste0(imagesDirectory, "roc-2biomarkers.png"),
+  width = 800,
+  height = 800
+)
+rocobj <-
+  plot.roc(binnedPeaksMatrix.conditions, binnedPeaksMatrix[, "1450.33683095267"], col =
+             "red")
+legend(
+  "bottomright",
+  col = c("#ff0000", "#0000ff"),
+  legend = c("peak 1450.33683095267", "peak 1546.52890935556"),
+  lwd = 2
+)
+rocobj2 <-
+  plot.roc(binnedPeaksMatrix.conditions,
+           binnedPeaksMatrix[, "1546.52890935556"],
+           col = "blue",
+           add = TRUE)
 dev.off()
 
 # show area under roc curve of the second biomarker
@@ -59,15 +81,20 @@ colnames(data)[ncol(data)] <- "condition"
 
 set.seed(2019)
 
-trainSamplesIndexes <- createDataPartition(y = data$condition, p = 0.7, list = FALSE)
+trainSamplesIndexes <-
+  createDataPartition(y = data$condition,
+                      p = 0.7,
+                      list = FALSE)
 
-train <- data[trainSamplesIndexes,]
-test <- data[-trainSamplesIndexes,]
+train <- data[trainSamplesIndexes, ]
+test <- data[-trainSamplesIndexes, ]
 
 # Replace column names with V1, V2, ..., Vn to use them in some models that do
 # not accept variable names starting with numbers
 
-data.colnames <- c(sapply(1:(ncol(data)-1), function(x) paste0("V", x)), "condition")
+data.colnames <-
+  c(sapply(1:(ncol(data) - 1), function(x)
+    paste0("V", x)), "condition")
 
 train.fixedColnames <- train
 colnames(train.fixedColnames) <- data.colnames
@@ -81,14 +108,24 @@ colnames(test.fixedColnames) <- data.colnames
 #
 #	---------------------------------------------------------------------------
 
-nn <- train(condition~., data = train.fixedColnames, method = "mlp", trControl = trainControl(method = "none"), preProcess = c("center", "scale"))
-nn.test.result <- predict(nn, type="prob", newdata=test.fixedColnames)
+nn <-
+  train(
+    condition ~ .,
+    data = train.fixedColnames,
+    method = "mlp",
+    trControl = trainControl(method = "none"),
+    preProcess = c("center", "scale")
+  )
+nn.test.result <-
+  predict(nn, type = "prob", newdata = test.fixedColnames)
 
-testSamples.cancerProb <- nn.test.result[,1] 
-testSamples.class <- binnedPeaksMatrix.conditions[match(rownames(nn.test.result), rownames(binnedPeaksMatrix))]
+testSamples.cancerProb <- nn.test.result[, 1]
+testSamples.class <-
+  binnedPeaksMatrix.conditions[match(rownames(nn.test.result), rownames(binnedPeaksMatrix))]
 
-png(paste0(imagesDirectory, "roc-ann.png"), width = 800, height = 800)
+png(paste0(imagesDirectory, "roc-ann.png"),
+    width = 800,
+    height = 800)
 rocobj <- plot.roc(testSamples.class, testSamples.cancerProb)
 rocobj$auc
 dev.off()
-

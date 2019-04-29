@@ -7,10 +7,14 @@ source("load-cancer.R")
 #	---------------------------------------------------------------------------
 
 # The spectra length is the number of peaks that it holds.
-spectraLengths <- sapply(data$spectra, length);
+spectraLengths <- sapply(data$spectra, length)
+
 
 # Calculate the mean intensity of the peaks in the spectra.
-intensityMeans <- sapply(data$spectra, function(spectra) mean(intensity(spectra)));
+intensityMeans <-
+  sapply(data$spectra, function(spectra)
+    mean(intensity(spectra)))
+
 
 # Data is grouped in a data frame, so that it can be used in the boxplot function.
 dataFrame <- data.frame(
@@ -22,27 +26,33 @@ dataFrame <- data.frame(
 )
 
 # This graphical configuration allows including two plots in the same window.
-par(mfrow = c(1,2))
+par(mfrow = c(1, 2))
 
 # Generation of the boxplot for the spectra lengths.
 bpLength = boxplot(
-  spectraLengths ~ samples, data = dataFrame,
-  main = "Spectra Size", ylab = "Number of peaks", xlab = "Sample",
+  spectraLengths ~ samples,
+  data = dataFrame,
+  main = "Spectra Size",
+  ylab = "Number of peaks",
+  xlab = "Sample",
   col = data$samplesColors
 )
 
 
 # Generation of the boxplot for the mean peak intensity.
 bpIntensity = boxplot(
-  intensityMeans ~ samples, data = dataFrame,
-  main = "Intensities", ylab = "Mean Intensity", xlab = "Sample",
+  intensityMeans ~ samples,
+  data = dataFrame,
+  main = "Intensities",
+  ylab = "Mean Intensity",
+  xlab = "Sample",
   col = data$samplesColors
 )
 
 # The boxplot result includes the "out" attribute, a vector with the outlier values.
 # The spectra with outlier values in the characteristics analyzed are extracted here.
-dataFrame[dataFrame$spectraLengths %in% bpLength$out,]
-dataFrame[dataFrame$intensityMeans %in% bpIntensity$out,]
+dataFrame[dataFrame$spectraLengths %in% bpLength$out, ]
+dataFrame[dataFrame$intensityMeans %in% bpIntensity$out, ]
 
 #	---------------------------------------------------------------------------
 #
@@ -52,7 +62,7 @@ dataFrame[dataFrame$intensityMeans %in% bpIntensity$out,]
 
 source("multiple-sample-visualization-functions.R")
 
-par(mfrow = c(2,2))
+par(mfrow = c(2, 2))
 compareSpectra(data$spectra[[7]], data$spectra[[6]])
 compareSpectra(data$spectra[[7]], data$spectra[[8]])
 compareSpectra(data$spectra[[7]], data$spectra[[9]])

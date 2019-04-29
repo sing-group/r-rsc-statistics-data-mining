@@ -2,7 +2,9 @@ library(kohonen)
 
 imagesDirectory <- "images/som/"
 
-dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+dir.create(imagesDirectory,
+           recursive = TRUE,
+           showWarnings = FALSE)
 
 source("load-cancer.R")
 
@@ -18,10 +20,10 @@ source("load-cancer.R")
 
 set.seed(2019)
 somresult <- som(
-    scale(binnedPeaksMatrix),
-    grid = somgrid(xdim = 13, ydim = 3, topo = "hexagonal"),
-    alpha = c(0.5, 0.01),
-    rlen = 4000
+  scale(binnedPeaksMatrix),
+  grid = somgrid(xdim = 13, ydim = 3, topo = "hexagonal"),
+  alpha = c(0.5, 0.01),
+  rlen = 4000
 )
 
 plot(somresult, type = "changes")
@@ -40,11 +42,11 @@ classification
 #	---------------------------------------------------------------------------
 set.seed(2019)
 somresult <- xyf(
-    scale(binnedPeaksMatrix),
-    factor(data$spectraConditions),
-    grid = somgrid(xdim = 13, ydim = 3, topo = "hexagonal"),
-    alpha = c(0.5, 0.01),
-    rlen = 4000
+  scale(binnedPeaksMatrix),
+  factor(data$spectraConditions),
+  grid = somgrid(xdim = 13, ydim = 3, topo = "hexagonal"),
+  alpha = c(0.5, 0.01),
+  rlen = 4000
 )
 
 plot(somresult, type = "codes")

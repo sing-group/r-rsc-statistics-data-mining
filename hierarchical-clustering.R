@@ -2,7 +2,9 @@ source("distance-measures.R")
 
 imagesDirectory <- "images/clustering/hierarchical/"
 
-dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
+dir.create(imagesDirectory,
+           recursive = TRUE,
+           showWarnings = FALSE)
 
 #	---------------------------------------------------------------------------
 #
@@ -14,21 +16,29 @@ dir.create(imagesDirectory, recursive=TRUE, showWarnings=FALSE)
 #
 #	---------------------------------------------------------------------------
 
-distances.jaccard <- jaccard.dist(rownames(binnedPeaksMatrix), toSpectraList(binnedPeaksMatrix))
+distances.jaccard <-
+  jaccard.dist(rownames(binnedPeaksMatrix),
+               toSpectraList(binnedPeaksMatrix))
 
 clustering.jaccard <- hclust(distances.jaccard)
 
-clustering.jaccard.cut <- cutree(clustering.jaccard, k=3)
+clustering.jaccard.cut <- cutree(clustering.jaccard, k = 3)
 
 #	Run the following commands to see the names of the samples that belong to
 #	cluster 1, 2 or 3
-	#	which(cutree(clustering, k=3)==1)
-	#	which(cutree(clustering, k=3)==2)
-	#	which(cutree(clustering, k=3)==3)
+#	which(cutree(clustering, k = 3) == 1)
+#	which(cutree(clustering, k = 3) == 2)
+#	which(cutree(clustering, k = 3) == 3)
 
-png(paste0(imagesDirectory, "clustering-jaccard-replicates.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-jaccard-replicates.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.jaccard, main = "Replicates HCA (complete linkage)")
-rect.hclust(clustering.jaccard, k = 3, border = c("blue", "red", "green"))
+rect.hclust(clustering.jaccard,
+            k = 3,
+            border = c("blue", "red", "green"))
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -37,13 +47,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-distances.jaccard.consensus <- jaccard.dist(rownames(consensusBinnedPeaksMatrix), toSpectraList(consensusBinnedPeaksMatrix))
+distances.jaccard.consensus <-
+  jaccard.dist(rownames(consensusBinnedPeaksMatrix),
+               toSpectraList(consensusBinnedPeaksMatrix))
 
 clustering.jaccard.consensus <- hclust(distances.jaccard.consensus)
 
-png(paste0(imagesDirectory, "clustering-jaccard-samples.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-jaccard-samples.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.jaccard.consensus, main = "Samples HCA (complete linkage)")
-rect.hclust(clustering.jaccard.consensus, k = 3, border = c("blue", "red", "green"))
+rect.hclust(
+  clustering.jaccard.consensus,
+  k = 3,
+  border = c("blue", "red", "green")
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -54,15 +74,22 @@ dev.off()
 
 presenceBinnedPeaksMatrix <- asPresenceMatrix(binnedPeaksMatrix)
 
-distances.manhattan <- dist(presenceBinnedPeaksMatrix, method="manhattan")
+distances.manhattan <-
+  dist(presenceBinnedPeaksMatrix, method = "manhattan")
 
 clustering.manhattan <- hclust(distances.manhattan)
 
-clustering.manhattan.cut <- cutree(clustering.manhattan, k=3)
+clustering.manhattan.cut <- cutree(clustering.manhattan, k = 3)
 
-png(paste0(imagesDirectory, "clustering-manhattan-replicates.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-manhattan-replicates.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.manhattan, main = "Replicates HCA (complete linkage)")
-rect.hclust(clustering.manhattan, k = 3, border = c("blue", "red", "green"))
+rect.hclust(clustering.manhattan,
+            k = 3,
+            border = c("blue", "red", "green"))
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -71,15 +98,26 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-presenceConsensusBinnedPeaksMatrix <- asPresenceMatrix(consensusBinnedPeaksMatrix)
+presenceConsensusBinnedPeaksMatrix <-
+  asPresenceMatrix(consensusBinnedPeaksMatrix)
 
-distances.manhattan.consensus <- dist(presenceConsensusBinnedPeaksMatrix, method="manhattan")
+distances.manhattan.consensus <-
+  dist(presenceConsensusBinnedPeaksMatrix, method = "manhattan")
 
-clustering.manhattan.consensus <- hclust(distances.manhattan.consensus)
+clustering.manhattan.consensus <-
+  hclust(distances.manhattan.consensus)
 
-png(paste0(imagesDirectory, "clustering-manhattan-samples.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-manhattan-samples.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.manhattan.consensus, main = "Samples HCA (complete linkage)")
-rect.hclust(clustering.manhattan.consensus, k = 3, border = c("blue", "red", "green"))
+rect.hclust(
+  clustering.manhattan.consensus,
+  k = 3,
+  border = c("blue", "red", "green")
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -88,13 +126,17 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-distances.euclidean <- dist(binnedPeaksMatrix, method="euclidean")
+distances.euclidean <- dist(binnedPeaksMatrix, method = "euclidean")
 
 clustering.euclidean <- hclust(distances.euclidean)
 
-clustering.euclidean.cut <- cutree(clustering.euclidean, k=3)
+clustering.euclidean.cut <- cutree(clustering.euclidean, k = 3)
 
-png(paste0(imagesDirectory, "clustering-euclidean-replicates.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-euclidean-replicates.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.euclidean, main = "Replicates HCA (complete linkage)")
 dev.off()
 
@@ -104,11 +146,17 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-distances.euclidean.consensus <- dist(consensusBinnedPeaksMatrix, method="euclidean")
+distances.euclidean.consensus <-
+  dist(consensusBinnedPeaksMatrix, method = "euclidean")
 
-clustering.euclidean.consensus <- hclust(distances.euclidean.consensus)
+clustering.euclidean.consensus <-
+  hclust(distances.euclidean.consensus)
 
-png(paste0(imagesDirectory, "clustering-euclidean-samples.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-euclidean-samples.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.euclidean.consensus, main = "Samples HCA (complete linkage)")
 dev.off()
 
@@ -122,9 +170,13 @@ distances.correlation <- pearson.dist(binnedPeaksMatrix)
 
 clustering.correlation <- hclust(distances.correlation)
 
-clustering.correlation.cut <- cutree(clustering.correlation, k=3)
+clustering.correlation.cut <- cutree(clustering.correlation, k = 3)
 
-png(paste0(imagesDirectory, "clustering-correlation-replicates.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-correlation-replicates.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.correlation, main = "Replicates HCA (complete linkage)")
 dev.off()
 
@@ -134,11 +186,17 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-distances.correlation.consensus <- pearson.dist(consensusBinnedPeaksMatrix)
+distances.correlation.consensus <-
+  pearson.dist(consensusBinnedPeaksMatrix)
 
-clustering.correlation.consensus <- hclust(distances.correlation.consensus)
+clustering.correlation.consensus <-
+  hclust(distances.correlation.consensus)
 
-png(paste0(imagesDirectory, "clustering-correlation-samples.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-correlation-samples.png"),
+  width = 1200,
+  height = 1200
+)
 plot(clustering.correlation.consensus, main = "Samples HCA (complete linkage)")
 dev.off()
 
@@ -154,41 +212,54 @@ dev.off()
 
 library("gplots")
 
-plotHeatmap <- function(peaksMatrix, clustering, spectraColors, breaksCount = 24, rowsep = c(), datasetConditions = c(), datasetConditionsColors = c()) {
-	breaks <- seq(
-		quantile(peaksMatrix, na.rm=TRUE, probs=0.001),
-		quantile(peaksMatrix, na.rm=TRUE, probs=0.999),
-		length.out = breaksCount
-	)
-
-	rowSideColors <- spectraColors
-	
-	
-	heatmap.2(
-		peaksMatrix,
-		Colv=FALSE,
-		Rowv=as.dendrogram(clustering),
-		dendrogram="row",
-		breaks=breaks,
-		col=bluered(length(breaks)-1),
-		scale="none",
-		RowSideColors=rowSideColors,
-		na.color = "gray",
-		rowsep=rowsep,
-		lwid=c(3,6),
-		trace="none",
-		margins =c(12,9),
-	)
-	if(length(datasetConditions)>0 && length(datasetConditionsColors)>0){
-		par(lend = 1)           # square line ends for the color legend
-		legend("topright",      # location of the legend on the heatmap plot
-			legend = datasetConditions, # category labels
-			col = datasetConditionsColors,  # color key
-			lty= 1,             # line style
-			lwd = 10            # line width
-		)
-	}
-}
+plotHeatmap <-
+  function(peaksMatrix,
+           clustering,
+           spectraColors,
+           breaksCount = 24,
+           rowsep = c(),
+           datasetConditions = c(),
+           datasetConditionsColors = c()) {
+    breaks <- seq(
+      quantile(peaksMatrix, na.rm = TRUE, probs = 0.001),
+      quantile(peaksMatrix, na.rm = TRUE, probs = 0.999),
+      length.out = breaksCount
+    )
+    
+    rowSideColors <- spectraColors
+    
+    
+    heatmap.2(
+      peaksMatrix,
+      Colv = FALSE,
+      Rowv = as.dendrogram(clustering),
+      dendrogram = "row",
+      breaks = breaks,
+      col = bluered(length(breaks) - 1),
+      scale = "none",
+      RowSideColors = rowSideColors,
+      na.color = "gray",
+      rowsep = rowsep,
+      lwid = c(3, 6),
+      trace = "none",
+      margins = c(12, 9),
+    )
+    if (length(datasetConditions) > 0 &&
+        length(datasetConditionsColors) > 0) {
+      par(lend = 1)           # square line ends for the color legend
+      legend(
+        "topright",
+        # location of the legend on the heatmap plot
+        legend = datasetConditions,
+        # category labels
+        col = datasetConditionsColors,
+        # color key
+        lty = 1,
+        # line style
+        lwd = 10            # line width
+      )
+    }
+  }
 
 #	---------------------------------------------------------------------------
 #
@@ -196,8 +267,22 @@ plotHeatmap <- function(peaksMatrix, clustering, spectraColors, breaksCount = 24
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-jaccard-replicates-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(binnedPeaksMatrix, clustering.jaccard, data$spectraColors, rowsep = c(25, 35), datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-jaccard-replicates-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  binnedPeaksMatrix,
+  clustering.jaccard,
+  data$spectraColors,
+  rowsep = c(25, 35),
+  datasetConditions = data$datasetConditions,
+  datasetConditionsColors = data$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -206,8 +291,22 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-jaccard-samples-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(consensusBinnedPeaksMatrix, clustering.jaccard.consensus, consensusData$spectraColors, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-jaccard-samples-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  consensusBinnedPeaksMatrix,
+  clustering.jaccard.consensus,
+  consensusData$spectraColors,
+  rowsep = c(5, 7),
+  datasetConditions = consensusData$datasetConditions,
+  datasetConditionsColors = consensusData$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -216,8 +315,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-manhattan-replicates-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(presenceBinnedPeaksMatrix, clustering.manhattan, data$spectraColors, breaksCount = 4, rowsep = c(25, 35), datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-manhattan-replicates-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  presenceBinnedPeaksMatrix,
+  clustering.manhattan,
+  data$spectraColors,
+  breaksCount = 4,
+  rowsep = c(25, 35),
+  datasetConditions = data$datasetConditions,
+  datasetConditionsColors = data$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -226,8 +340,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-manhattan-samples-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(presenceConsensusBinnedPeaksMatrix, clustering.manhattan.consensus, consensusData$spectraColors, breaksCount = 4, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-manhattan-samples-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  presenceConsensusBinnedPeaksMatrix,
+  clustering.manhattan.consensus,
+  consensusData$spectraColors,
+  breaksCount = 4,
+  rowsep = c(5, 7),
+  datasetConditions = consensusData$datasetConditions,
+  datasetConditionsColors = consensusData$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -236,8 +365,21 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-euclidean-replicates-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(binnedPeaksMatrix, clustering.euclidean, data$spectraColors, datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-euclidean-replicates-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  binnedPeaksMatrix,
+  clustering.euclidean,
+  data$spectraColors,
+  datasetConditions = data$datasetConditions,
+  datasetConditionsColors = data$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -246,8 +388,22 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-euclidean-samples-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(consensusBinnedPeaksMatrix, clustering.euclidean.consensus, consensusData$spectraColors, rowsep = c(5, 10), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = consensusData$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-euclidean-samples-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  consensusBinnedPeaksMatrix,
+  clustering.euclidean.consensus,
+  consensusData$spectraColors,
+  rowsep = c(5, 10),
+  datasetConditions = consensusData$datasetConditions,
+  datasetConditionsColors = consensusData$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -256,8 +412,21 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-correlation-replicates-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(binnedPeaksMatrix, clustering.correlation, data$spectraColors, datasetConditions = data$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-correlation-replicates-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  binnedPeaksMatrix,
+  clustering.correlation,
+  data$spectraColors,
+  datasetConditions = data$datasetConditions,
+  datasetConditionsColors = data$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -266,8 +435,22 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-png(paste0(imagesDirectory, "clustering-correlation-samples-with-heatmap.png"), width=1200, height=1200)
-plotHeatmap(consensusBinnedPeaksMatrix, clustering.correlation.consensus, consensusData$spectraColors, rowsep = c(5, 7), datasetConditions = consensusData$datasetConditions, datasetConditionsColors = data$datasetConditionsColors)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-correlation-samples-with-heatmap.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plotHeatmap(
+  consensusBinnedPeaksMatrix,
+  clustering.correlation.consensus,
+  consensusData$spectraColors,
+  rowsep = c(5, 7),
+  datasetConditions = consensusData$datasetConditions,
+  datasetConditionsColors = data$datasetConditionsColors
+)
 dev.off()
 
 #	---------------------------------------------------------------------------
@@ -292,12 +475,26 @@ set.seed(2019)
 #	---------------------------------------------------------------------------
 
 jaccard.dist.2 <- function(binnedPeaksMatrix) {
-	jaccard.dist(rownames(t(binnedPeaksMatrix)), toSpectraList(t(binnedPeaksMatrix)))
+  jaccard.dist(rownames(t(binnedPeaksMatrix)), toSpectraList(t(binnedPeaksMatrix)))
 }
 
-res.pv.jaccard <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = jaccard.dist.2, nboot = 1000, parallel=F)
+res.pv.jaccard <-
+  pvclust(
+    t(binnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = jaccard.dist.2,
+    nboot = 1000,
+    parallel = F
+  )
 
-png(paste0(imagesDirectory, "clustering-jaccard-replicates-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-jaccard-replicates-pvclust.png"
+  ),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.jaccard, hang = -1, cex = 0.5)
 pvrect(res.pv.jaccard)
 dev.off()
@@ -308,9 +505,20 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.jaccard.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = jaccard.dist.2, nboot = 1000, parallel=F)
+res.pv.jaccard.consensus <-
+  pvclust(
+    t(consensusBinnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = jaccard.dist.2,
+    nboot = 1000,
+    parallel = F
+  )
 
-png(paste0(imagesDirectory, "clustering-jaccard-samples-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-jaccard-samples-pvclust.png"),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.jaccard.consensus, hang = -1, cex = 0.5)
 pvrect(res.pv.jaccard.consensus)
 dev.off()
@@ -321,9 +529,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.manhattan <- pvclust(t(presenceBinnedPeaksMatrix), method.hclust = "complete", method.dist = "manhattan", nboot = 1000, parallel=T)
+res.pv.manhattan <-
+  pvclust(
+    t(presenceBinnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "manhattan",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-manhattan-replicates-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-manhattan-replicates-pvclust.png"
+  ),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.manhattan, hang = -1, cex = 0.5)
 pvrect(res.pv.manhattan)
 dev.off()
@@ -334,9 +556,20 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.manhattan.consensus <- pvclust(t(presenceConsensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "manhattan", nboot = 1000, parallel=T)
+res.pv.manhattan.consensus <-
+  pvclust(
+    t(presenceConsensusBinnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "manhattan",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-manhattan-samples-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-manhattan-samples-pvclust.png"),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.manhattan.consensus, hang = -1, cex = 0.5)
 pvrect(res.pv.manhattan.consensus)
 dev.off()
@@ -347,9 +580,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.euclidean <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = "euclidean", nboot = 1000, parallel=T)
+res.pv.euclidean <-
+  pvclust(
+    t(binnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "euclidean",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-euclidean-replicates-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-euclidean-replicates-pvclust.png"
+  ),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.euclidean, hang = -1, cex = 0.5)
 pvrect(res.pv.euclidean)
 dev.off()
@@ -361,9 +608,20 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.euclidean.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "euclidean", nboot = 1000, parallel=T)
+res.pv.euclidean.consensus <-
+  pvclust(
+    t(consensusBinnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "euclidean",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-euclidean-samples-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(imagesDirectory, "clustering-euclidean-samples-pvclust.png"),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.euclidean.consensus, hang = -1, cex = 0.5)
 pvrect(res.pv.euclidean.consensus)
 dev.off()
@@ -375,9 +633,23 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.correlation <- pvclust(t(binnedPeaksMatrix), method.hclust = "complete", method.dist = "correlation", nboot = 1000, parallel=T)
+res.pv.correlation <-
+  pvclust(
+    t(binnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "correlation",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-correlation-replicates-pvclust.png"), width=1200, height=1200)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-correlation-replicates-pvclust.png"
+  ),
+  width = 1200,
+  height = 1200
+)
 plot(res.pv.correlation, hang = -1, cex = 0.5)
 pvrect(res.pv.correlation)
 dev.off()
@@ -388,9 +660,25 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 
-res.pv.correlation.consensus <- pvclust(t(consensusBinnedPeaksMatrix), method.hclust = "complete", method.dist = "correlation", nboot = 1000, parallel=T)
+res.pv.correlation.consensus <-
+  pvclust(
+    t(consensusBinnedPeaksMatrix),
+    method.hclust = "complete",
+    method.dist = "correlation",
+    nboot = 1000,
+    parallel = T
+  )
 
-png(paste0(imagesDirectory, "clustering-correlation-samples-pvclust.png"), width=1200, height=1200)
-plot(res.pv.correlation.consensus, hang = -1, cex = 0.5)
+png(
+  paste0(
+    imagesDirectory,
+    "clustering-correlation-samples-pvclust.png"
+  ),
+  width = 1200,
+  height = 1200
+)
+plot(res.pv.correlation.consensus,
+     hang = -1,
+     cex = 0.5)
 pvrect(res.pv.correlation.consensus)
 dev.off()
