@@ -12,7 +12,7 @@ loadDirectory <- function(dataDir) {
     spectraData <- list()
 
     for (spectrumFile in spectra){
-   	 spectrumFile <- paste(dataDir,"/", spectrumFile, sep='')
+   	 spectrumFile <- paste(dataDir,"/", spectrumFile, sep="")
    	 data <- read.csv(spectrumFile)
    	 spectrum <- createMassPeaks(mass=data[,1], intensity=data[,2], metaData=list(name=spectrumFile))
    	 spectraData <- c(spectraData, spectrum)
@@ -29,10 +29,10 @@ loadSamples <- function(dataDir) {
     spectraSampleNames <- list()
 
     for (sampleDir in samples){
-		sampleDirectory <- paste(dataDir,"/", sampleDir, sep='')
+		sampleDirectory <- paste(dataDir,"/", sampleDir, sep="")
 		sampleSpectra <- loadDirectory(sampleDirectory)
 		spectra <- c(spectra, sampleSpectra)
-		spectraNames <- c(spectraNames, sapply(1:length(sampleSpectra), FUN=function(x) paste(sampleDir,"_R",x,sep='')))
+		spectraNames <- c(spectraNames, sapply(1:length(sampleSpectra), FUN=function(x) paste(sampleDir,"_R",x,sep="")))
 		spectraSampleNames <- c(spectraSampleNames, rep(sampleDir, length(sampleSpectra)))
 		spectraConditions <- c(spectraConditions, rep(tail(strsplit(dataDir, "/")[[1]], n=1), length(sampleSpectra)))
     }

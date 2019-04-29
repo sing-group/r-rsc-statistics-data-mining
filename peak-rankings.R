@@ -58,7 +58,7 @@ dev.off()
 
 #	---------------------------------------------------------------------------
 #
-#	2.2 Using the 'X' top peaks to perform a Hierarchical Clustering Analysis 
+#	2.2 Using the "X" top peaks to perform a Hierarchical Clustering Analysis 
 #       (using Jaccard distance)
 #
 #	---------------------------------------------------------------------------

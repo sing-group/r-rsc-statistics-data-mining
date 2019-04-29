@@ -148,7 +148,7 @@ dev.off()
 #
 #	---------------------------------------------------------------------------
 #
-#	2.1 Reusable 'plotHeatmap' Function
+#	2.1 Reusable "plotHeatmap" Function
 #
 #	---------------------------------------------------------------------------
 
@@ -173,7 +173,7 @@ plotHeatmap <- function(peaksMatrix, clustering, spectraColors, breaksCount = 24
 		col=bluered(length(breaks)-1),
 		scale="none",
 		RowSideColors=rowSideColors,
-		na.color = 'gray',
+		na.color = "gray",
 		rowsep=rowsep,
 		lwid=c(3,6),
 		trace="none",

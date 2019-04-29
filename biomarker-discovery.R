@@ -252,7 +252,7 @@ plot(
 # adjusted p-value < 0.05 (orange) and both (green)
 #
 
-colors <- c('black','red','orange','green')
+colors <- c("black", "red", "orange", "green")
 
 points(logFC[names.logFC.filter],-log10(pvals[names.logFC.filter]), col=colors[2], pch=20) 
 points(logFC[names.pValue.filter],-log10(pvals[names.pValue.filter]), col=colors[3], pch=20) 

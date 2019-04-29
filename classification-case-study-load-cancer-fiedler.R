@@ -13,8 +13,8 @@ spectra <- import(getPathFiedler2009()["spectra"], verbose=FALSE)
 spectra.info <- read.table(getPathFiedler2009()["info"], sep=",", header=TRUE)
 
 # Dataset filtering to leave only Leipzig samples
-spectra <- spectra[spectra.info$location == 'leipzig']
-spectra.info <- spectra.info[spectra.info$location == 'leipzig',]
+spectra <- spectra[spectra.info$location == "leipzig"]
+spectra.info <- spectra.info[spectra.info$location == "leipzig",]
 
 # Common preprocessing
 set.seed(2019)

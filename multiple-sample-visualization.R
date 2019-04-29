@@ -50,7 +50,7 @@ for(part in 1:comparison.parts) {
 	
 	indexes <- intersect(which(masses > peak.start), which(masses < peak.end))
 	
-	plot(NULL, xlim=c(peak.start, peak.end), ylim=c(0,1), xlab="m/z", ylab = NA, yaxt='n')
+	plot(NULL, xlim=c(peak.start, peak.end), ylim=c(0,1), xlab="m/z", ylab = NA, yaxt="n")
 	
 	for(index in 1:length(indexes)) {
 		i <- indexes[index]
