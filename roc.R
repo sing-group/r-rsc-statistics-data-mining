@@ -82,7 +82,7 @@ colnames(test.fixedColnames) <- data.colnames
 #	---------------------------------------------------------------------------
 
 nn <- train(condition~., data = train.fixedColnames, method = "mlp", trControl = trainControl(method = "none"), preProcess = c("center", "scale"))
-nn.test.result <- predict(nn, type="prob", newdata=test)
+nn.test.result <- predict(nn, type="prob", newdata=test.fixedColnames)
 
 testSamples.cancerProb <- nn.test.result[,1] 
 testSamples.class <- binnedPeaksMatrix.conditions[match(rownames(nn.test.result), rownames(binnedPeaksMatrix))]
