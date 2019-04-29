@@ -208,7 +208,7 @@ pvals <- p.adjust(pvals, method="fdr")
 # Fiedler et al. 2009 dataset
 #
 
-source("peak-ranking-fold-change-functions.R")
+source("peak-rankings-functions.R")
 
 avgPeaks <- meanConditionSpectra(unique(binnedPeaksMatrix.conditions), binnedPeaksMatrix, binnedPeaksMatrix.conditions)
 

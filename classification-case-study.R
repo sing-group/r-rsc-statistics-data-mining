@@ -1,4 +1,4 @@
-source("classification-load-cancer-fiedler.R")
+source("classification-case-study-load-cancer-fiedler.R")
 
 imagesDirectory <- "images/machine-learning/"
 
