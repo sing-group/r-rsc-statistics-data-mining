@@ -237,6 +237,8 @@ names.both.filter <- intersect(names.pValue.filter, names.logFC.filter)
 # Make the scatter plot
 #
 
+colors <- c("black", "red", "orange", "green")
+
 png(paste0(imagesDirectory, "biomarker-cancer-volcano-plot.png"), width = 900, height = 600)
 
 plot(
@@ -251,8 +253,6 @@ plot(
 # Highlight peaks with different colors for those with an |log2FC| > 1 (red), with an 
 # adjusted p-value < 0.05 (orange) and both (green)
 #
-
-colors <- c("black", "red", "orange", "green")
 
 points(logFC[names.logFC.filter],-log10(pvals[names.logFC.filter]), col=colors[2], pch=20) 
 points(logFC[names.pValue.filter],-log10(pvals[names.pValue.filter]), col=colors[3], pch=20) 
