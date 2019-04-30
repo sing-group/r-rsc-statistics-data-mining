@@ -4,3 +4,4 @@ download.file(
   zipFile
 )
 unzip(zipFile)
+file.remove(zipFile)

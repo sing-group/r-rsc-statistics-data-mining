@@ -131,6 +131,10 @@ getBinnedPeaksMatrix <-
     
     binnedPeaksMatrix
   }
+  
+if(!file.exists("cancer-dataset-supernatant")) {
+   source("download-cancer.R") 
+}
 
 dataDirs <- c(
   "cancer-dataset-supernatant/HEALTHY/",
