@@ -1,5 +1,7 @@
 # Statistics, Data Mining and Modeling [![license](https://img.shields.io/badge/LICENSE-MIT-blue.svg)](https://github.com/sing-group/seda)
- > Source code for the book chapter about `Statistics, Data Mining and Modeling`.
+ > Source code for the book chapter about **Statistics, Data Mining and Modeling**:
+ 
+ > M. Reboiro-Jato; D. Glez-Peña; H. López-Fernández. *Statistics, Data Mining and Modeling*. Chapter 5. Pags. 120-200. **Processing Metabolomics and Proteomics Data with Open Software, A practical guide**. Royal Society of Chemistry. ISBN: 978-1-78801-721-3, PDF eISBN: 978-1-78801-988-0, 2020, England. DOI: [10.1039/9781788019880-00120](https://doi.org/10.1039/9781788019880-00120)
  
 ## R code
 
